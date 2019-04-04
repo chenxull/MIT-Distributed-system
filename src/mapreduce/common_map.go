@@ -37,6 +37,7 @@ func doMap(
 		if mapTaskFile, err := os.Create(reduceName(jobName, mapTaskNumber, i)); err != nil {
 			log.Printf("create file %s failed.", reduceName(jobName, mapTaskNumber, i))
 		} else {
+			//fmt.Println("DEBUG::预测错误", reduceName(jobName, mapTaskNumber, i))
 			imm[i] = mapTaskFile
 			enc[i] = json.NewEncoder(mapTaskFile)
 		}
