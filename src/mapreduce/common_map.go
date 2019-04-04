@@ -1,7 +1,11 @@
 package mapreduce
 
 import (
+	"encoding/json"
 	"hash/fnv"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 // doMap manages one map task: it reads one of the input files
@@ -14,6 +18,48 @@ func doMap(
 	nReduce int, // the number of reduce task that will be run ("R" in the paper)
 	mapF func(file string, contents string) []KeyValue,
 ) {
+	//1. 读入数据
+	contents, err := ioutil.ReadFile(inFile)
+	if err != nil {
+		log.Printf("read file %s failed.", inFile)
+	}
+
+	//2.使用mapF 生成 key/value pairs
+	kvs := mapF(inFile, string(contents))
+
+	//3.使用 reduceName 生成文件名，并创建文件，获取文件的句柄，json 化文件
+
+	imm := make([]*os.File, nReduce)      //imm[]存放文件句柄
+	enc := make([]*json.Encoder, nReduce) //enc 创建 json 输入器，将文件存储为 json 格式
+
+	for i := 0; i < nReduce; i++ {
+		//生成map tasks file
+		if mapTaskFile, err := os.Create(reduceName(jobName, mapTaskNumber, i)); err != nil {
+			log.Printf("create file %s failed.", reduceName(jobName, mapTaskNumber, i))
+		} else {
+			imm[i] = mapTaskFile
+			enc[i] = json.NewEncoder(mapTaskFile)
+		}
+		//fmt.Println("DEBUG::", reduceName(jobName, mapTaskNumber, i))
+	}
+
+	//4.使用上述生成的文件，存储inFile文件的内容，这里使用 ihash进行区分
+	for _, kv := range kvs {
+		r := ihash(kv.Key) % nReduce
+		//fmt.Println("Map 生成的 kv 中的 key 为：", r)
+		if enc[r] != nil {
+			//将以 json 的格式写入到文件中
+			if err := enc[r].Encode(&kv); err != nil {
+				log.Printf("write %v to file %s failed", kv, reduceName(jobName, mapTaskNumber, r))
+			}
+		}
+	}
+
+	for i := 0; i < nReduce; i++ {
+		if imm[i] != nil {
+			imm[i].Close()
+		}
+	}
 	//
 	// You will need to write this function.
 	//

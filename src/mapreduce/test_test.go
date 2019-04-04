@@ -24,9 +24,12 @@ const (
 
 // Split in words
 func MapFunc(file string, value string) (res []KeyValue) {
+	//这里传入的 file 没有用上
 	debug("Map %v\n", value)
+	//按空格对字符串进行切分，返回字符串数组
 	words := strings.Fields(value)
 	for _, w := range words {
+		//每一个被切分出来的单词作为Key，value 为空
 		kv := KeyValue{w, ""}
 		res = append(res, kv)
 	}
@@ -35,6 +38,7 @@ func MapFunc(file string, value string) (res []KeyValue) {
 
 // Just return key
 func ReduceFunc(key string, values []string) string {
+	//fmt.Println("reduceFunc 的输出：")
 	for _, e := range values {
 		debug("Reduce %s %v\n", key, e)
 	}
@@ -81,7 +85,7 @@ func check(t *testing.T, files []string) {
 		i++
 	}
 	if i != nNumber {
-		t.Fatalf("Expected %d lines in output\n", nNumber)
+		t.Fatalf("Expected %d lines in output,hava %d\n", nNumber, i)
 	}
 }
 

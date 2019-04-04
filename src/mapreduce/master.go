@@ -138,8 +138,9 @@ func (mr *Master) run(jobName string, files []string, nreduce int,
 	mr.nReduce = nreduce
 
 	fmt.Printf("%s: Starting Map/Reduce task %s\n", mr.address, mr.jobName)
-
+	fmt.Println("mapPaase")
 	schedule(mapPhase)
+	fmt.Println("reducePaase")
 	schedule(reducePhase)
 	finish()
 	mr.merge()
