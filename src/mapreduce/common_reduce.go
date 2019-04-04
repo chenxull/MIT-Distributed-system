@@ -62,6 +62,7 @@ func doReduce(
 	enc := json.NewEncoder(out)
 	//调用reduceF()函数
 	for _, key := range keys {
+		//reduceF 将所有相同 key 的 value 统计出来。
 		if err = enc.Encode(KeyValue{key, reduceF(key, kvs[key])}); err != nil {
 			log.Printf("write the key: %s to the file %s failed.", key, outFile)
 		}

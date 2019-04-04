@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
-	"mapreduce"
 	"os"
+	"strconv"
+	"strings"
+	"unicode"
+
+	"github.com/chenxull/MIT/6.824/src/mapreduce"
 )
 
 //
@@ -15,6 +19,15 @@ import (
 //
 func mapF(filename string, contents string) []mapreduce.KeyValue {
 	// TODO: you have to write this function
+	fmt.Println("map parse: ", filename)
+	words := strings.FieldsFunc(contents, func(r rune) bool {
+		return !unicode.IsLetter(r)
+	})
+	var kv []mapreduce.KeyValue
+	for _, word := range words {
+		kv = append(kv, mapreduce.KeyValue{Key: word, Value: "1"})
+	}
+	return kv
 }
 
 //
@@ -24,6 +37,8 @@ func mapF(filename string, contents string) []mapreduce.KeyValue {
 //
 func reduceF(key string, values []string) string {
 	// TODO: you also have to write this function
+	//计算有多少个相同的 value 在这个 key 下存储着。
+	return strconv.Itoa(len(values))
 }
 
 // Can be run in 3 ways:
