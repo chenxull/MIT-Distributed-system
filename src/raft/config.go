@@ -229,7 +229,7 @@ func (cfg *config) connect(i int) {
 
 // detach server i from the net.
 func (cfg *config) disconnect(i int) {
-	// fmt.Printf("disconnect(%d)\n", i)
+	fmt.Printf("disconnect(%d)\n", i)
 
 	cfg.connected[i] = false
 
@@ -285,7 +285,7 @@ func (cfg *config) checkOneLeader() int {
 			if t > lastTermWithLeader {
 				lastTermWithLeader = t
 			}
-			fmt.Println("DEBUG::leader term is ", t)
+			fmt.Println("DEBUG checkOneLeader()::Leader term is ", t)
 		}
 
 		if len(leaders) != 0 {

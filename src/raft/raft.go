@@ -177,9 +177,15 @@ type AppendEntriesReply struct {
 // RequestVote example RequestVote RPC handler.
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
-
+	select {
+	case <-rf.shutdownCh:
+		DPrintf("[%d]: peer %d is shutting down, reject RV rpc request.\n", rf.me, rf.me)
+		return
+	default:
+	}
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
+	DPrintf("[%d]: rpc RV, from peer: %d, arg term: %d, my term: %d ", rf.me, args.CandidateID, args.Term, rf.CurrentTerm)
 
 	// args是候选人投票请求参数，rf 是接收到投票请求的服务器实例
 	if args.Term < rf.CurrentTerm {
@@ -449,6 +455,7 @@ func (rf *Raft) heartbeatDaemon() {
 				}
 			}
 		}
+		time.Sleep(rf.heartbeatInterval)
 	}
 }
 
@@ -469,10 +476,11 @@ func (rf *Raft) consensusCheck(n int) {
 
 	//将参数发送给follower 服务器,并处理返回的结果
 	go func() {
+		//DPrintf("[%d]: consistency Check to peer %d.\n", rf.me, n)
 		var reply AppendEntriesReply
 		if rf.sendAppendEntries(n, &args, &reply) {
 			rf.consensusCheckReplyHandle(n, &reply)
-			//fmt.Println("DEBUG")
+
 		}
 	}()
 }
