@@ -25,11 +25,13 @@ func TestInitialElection2A(t *testing.T) {
 	defer cfg.cleanup()
 
 	fmt.Printf("Test (2A): initial election ...\n")
+	fmt.Println("make_config完成")
 
 	// is a leader elected?
 	cfg.checkOneLeader()
 
 	// does the leader+term stay the same if there is no network failure?
+	//第一个测试的主要目的是判断集群中服务器的任期是否相同
 	term1 := cfg.checkTerms()
 	time.Sleep(2 * RaftElectionTimeout)
 	term2 := cfg.checkTerms()

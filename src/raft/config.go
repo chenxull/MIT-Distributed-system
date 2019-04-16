@@ -8,7 +8,7 @@ package raft
 // test with the original before submitting.
 //
 
-import "labrpc"
+import "github.com/chenxull/MIT/6.824/src/labrpc"
 import "log"
 import "sync"
 import "testing"
@@ -272,6 +272,7 @@ func (cfg *config) checkOneLeader() int {
 			if cfg.connected[i] {
 				if t, leader := cfg.rafts[i].GetState(); leader {
 					leaders[t] = append(leaders[t], i)
+
 				}
 			}
 		}
@@ -284,6 +285,7 @@ func (cfg *config) checkOneLeader() int {
 			if t > lastTermWithLeader {
 				lastTermWithLeader = t
 			}
+			fmt.Println("DEBUG::leader term is ", t)
 		}
 
 		if len(leaders) != 0 {
@@ -300,10 +302,12 @@ func (cfg *config) checkTerms() int {
 	for i := 0; i < cfg.n; i++ {
 		if cfg.connected[i] {
 			xterm, _ := cfg.rafts[i].GetState()
+			fmt.Println("xterm  ", xterm)
+			//fmt.Println("term  ", term)
 			if term == -1 {
 				term = xterm
 			} else if term != xterm {
-				cfg.t.Fatalf("servers disagree on term")
+				cfg.t.Fatalf("servers disagree on term ")
 			}
 		}
 	}

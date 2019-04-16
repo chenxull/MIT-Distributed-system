@@ -42,3 +42,11 @@ var task DoTaskArgs
 ```
 
 其实还有问题，文件0还是没有读取到，但是测试可以通过。以后有再来尝试解决吧，现在还无法解决。
+
+
+
+##Lab2 Part 2A
+
+### 问题
+![](https://ws3.sinaimg.cn/large/006tNc79ly1g24rvhlpnsj311q0fg40u.jpg)
+测试2A始终报上述错误,后来查明因为GetState()逻辑写错。每一个节点返回的应该是leader 所处的任期，我写成只有当其是 leader 时才将结点的当前任期值返回。
